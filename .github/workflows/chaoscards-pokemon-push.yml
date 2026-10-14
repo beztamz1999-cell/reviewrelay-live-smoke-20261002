@@ -1,0 +1,25 @@
+name: Pokemon isolated push export
+on:
+  push:
+    branches:
+      - scratch/chaoscards-pokemon-3020-20261014
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests pillow
+      - run: python -m playwright install --with-deps chromium
+      - run: python chaoscards-pokemon/export_data.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chaoscards-3020-dataset
+          path: dataset/
+          retention-days: 2
